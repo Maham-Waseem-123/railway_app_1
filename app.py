@@ -483,26 +483,26 @@ def add_passenger():
                          form=form, 
                          train_number=train_number, 
                          travel_date=travel_date)
-# Add to your app.py
+
+# Azure Language Service Configuration
+AZURE_LANGUAGE_ENDPOINT = "https://mahamai.cognitiveservices.azure.com/language/query-knowledgebases?projectName=TrainBot-QA&api-version=2021-10-01&deploymentName=production"
+AZURE_LANGUAGE_KEY = "BL7QRuwdhuojB1THueErvTAYbH2kQADCwUBI4F4U3zo4OCuX7PKJQQJ99BEACMsfrFXJ3w3AAAaACOGOSa7"
+
 @app.route('/ask', methods=['POST'])
 def ask_question():
     # Get user question from frontend
     data = request.json
     question = data.get('question', '')
 
-    # Azure Language Service config (use your actual values)
-    endpoint = "https://mahamai.cognitiveservices.azure.com/language/query-knowledgebases?projectName=TrainBot-QA&api-version=2021-10-01&deploymentName=production"
-    key = "BL7QRuwdhuojB1THueErvTAYbH2kQADCwUBI4F4U3zo4OCuX7PKJQQJ99BEACMsfrFXJ3w3AAAaACOGOSa7"
-
     headers = {
-        "Ocp-Apim-Subscription-Key": key,
+        "Ocp-Apim-Subscription-Key": AZURE_LANGUAGE_KEY,
         "Content-Type": "application/json"
     }
 
     payload = {
         "question": question,
         "top": 3,
-        "confidenceScoreThreshold": 0.5,
+        "confidenceScoreThreshold": 0.3,
         "answerSpanRequest": {
             "enable": True,
             "topAnswersWithSpan": 1
@@ -510,12 +510,26 @@ def ask_question():
     }
 
     try:
-        response = requests.post(endpoint, headers=headers, json=payload)
+        response = requests.post(
+            AZURE_LANGUAGE_ENDPOINT,
+            headers=headers,
+            json=payload
+        )
         response.raise_for_status()
-        best_answer = response.json()['answers'][0]['answer']
+        
+        result = response.json()
+        if not result.get('answers'):
+            return jsonify({"answer": "I couldn't find information about that train."})
+
+        best_answer = result['answers'][0].get('answer', 'No answer found')
         return jsonify({"answer": best_answer})
+
+    except requests.exceptions.HTTPError as e:
+        print(f"HTTP Error: {str(e)}")
+        return jsonify({"error": "Failed to connect to knowledge base"}), 500
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        print(f"General Error: {str(e)}")
+        return jsonify({"error": "Failed to process your question"}), 500
 
 # Admin Views
 @app.route('/admin/trains')
