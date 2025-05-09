@@ -40,7 +40,7 @@ moment = Moment(app)
 
 # Azure PostgreSQL connection - hardcoded
 # In your app.py configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://maham:Datascience12.@maham.postgres.database.azure.com:5432/railway?sslmode=require'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql://maham:Datascience12.@maham.postgres.database.azure.com:5432/railway?sslmode=require')
 # SQLAlchemy engine options
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
     'pool_pre_ping': True,
