@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+
 {% block title %}Book Train{% endblock %}
 
 {% block content %}
@@ -8,7 +9,7 @@
     <p>{{ train.train_name }} ({{ train.train_number }})</p>
     <p>{{ train.departure_city }} to {{ train.arrival_city }} on {{ travel_date }}</p>
   </div>
-  
+
   <!-- Flash messages -->
   {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -19,26 +20,26 @@
       </div>
     {% endif %}
   {% endwith %}
-  
+
   <div class="booking-grid">
     <div class="booking-form">
       <form method="POST" action="{{ url_for('book_train', train_number=train.train_number, travel_date=travel_date) }}">
         {{ form.hidden_tag() }}
-        
+
         <div class="form-group">
           <label for="passenger_id">{{ form.passenger_id.label }}</label>
           {{ form.passenger_id(class="form-control") }}
         </div>
-        
+
         <div class="form-group">
           <label for="ticket_category">{{ form.ticket_category.label }}</label>
           {{ form.ticket_category(class="form-control") }}
         </div>
-        
+
         <button type="submit" class="btn btn-yellow">Confirm Booking</button>
       </form>
     </div>
-    
+
     <div class="booking-details">
       <h3>Train Details</h3>
       <div class="detail-item">
@@ -57,7 +58,7 @@
         <span class="detail-label">Travel Date:</span>
         <span class="detail-value">{{ travel_date }}</span>
       </div>
-      
+
       <h3>Seat Availability</h3>
       <ul class="seat-list">
         {% for type, seats in available_seats.items() %}
@@ -78,39 +79,39 @@
     padding: 2rem;
     color: #f4f6f8;
   }
-  
+
   .booking-header {
     text-align: center;
     margin-bottom: 2rem;
   }
-  
+
   .booking-header h2 {
     font-size: 2rem;
     margin-bottom: 0.5rem;
   }
-  
+
   .booking-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
   }
-  
+
   .booking-form, .booking-details {
     background: #5a4f4f63;
     padding: 1.5rem;
     border-radius: 10px;
   }
-  
+
   .form-group {
     margin-bottom: 1.5rem;
   }
-  
+
   .form-group label {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 600;
   }
-  
+
   .form-control {
     width: 100%;
     padding: 0.75rem;
@@ -119,7 +120,7 @@
     background-color: #fff;
     color: #000;
   }
-  
+
   .btn-yellow {
     background-color: #0400e6ec;
     color: #fff;
@@ -130,11 +131,11 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
   }
-  
+
   .btn-yellow:hover {
     background-color: #0200c6;
   }
-  
+
   .detail-item {
     display: flex;
     justify-content: space-between;
@@ -142,19 +143,19 @@
     padding-bottom: 0.5rem;
     border-bottom: 1px solid #e1e1e191;
   }
-  
+
   .seat-list {
     list-style: none;
     padding: 0;
   }
-  
+
   .seat-list li {
     display: flex;
     justify-content: space-between;
     padding: 0.5rem 0;
     border-bottom: 1px solid #e1e1e191;
   }
-  
+
   .alert-success {
     background-color: #d4edda;
     color: #155724;
@@ -162,7 +163,7 @@
     margin-bottom: 1rem;
     border-radius: 4px;
   }
-  
+
   @media (max-width: 768px) {
     .booking-grid {
       grid-template-columns: 1fr;
