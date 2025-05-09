@@ -2,7 +2,7 @@ alembic==1.12.0
 Babel==2.12.1
 blinker==1.6.3
 click==8.1.7
-flask==2.0.3
+flask==2.2.5  # Critical change
 Flask-Login==0.6.3
 Flask-Moment==0.11.0
 Flask-SQLAlchemy==3.1.1
