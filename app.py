@@ -20,6 +20,7 @@ from flask_moment import Moment
 from flask_login import LoginManager
 
 from sqlalchemy import or_, desc, and_
+from sqlalchemy.sql import text
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from forms import SearchForm, BookingForm, UserRegistrationForm, PassengerForm, LoginForm
