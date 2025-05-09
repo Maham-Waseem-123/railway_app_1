@@ -453,6 +453,7 @@ def add_passenger():
     
     if form.validate_on_submit():
         try:
+            # Create passenger first
             passenger = Passenger(
                 user_id=session['user_id'],
                 passenger_name=form.name.data,
@@ -465,11 +466,29 @@ def add_passenger():
             )
             db.session.add(passenger)
             db.session.commit()
+
+            # Handle file uploads to Azure Blob Storage
+            uploaded_files = request.files.getlist('files')
+            if uploaded_files:
+                # Initialize Azure Blob Service Client
+                blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
+                container_client = blob_service_client.get_container_client(AZURE_CONTAINER_NAME)
+
+                for file in uploaded_files:
+                    if file.filename != '':
+                        # Create a blob name using passenger ID and original filename
+                        blob_name = f"passenger_{passenger.passenger_id}/{file.filename}"
+                        blob_client = container_client.get_blob_client(blob_name)
+                        
+                        # Upload the file
+                        blob_client.upload_blob(file.stream)
+                        flash(f'File {file.filename} uploaded successfully')
+
             flash('Passenger added successfully! Please complete the booking.')
-            # Ensure the parameters are properly passed in the URL
             return redirect(url_for('book_train', 
                                  train_number=train_number, 
                                  travel_date=travel_date))
+        
         except Exception as e:
             db.session.rollback()
             flash(f'Failed to add passenger. Error: {str(e)}')
