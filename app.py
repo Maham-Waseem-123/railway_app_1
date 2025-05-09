@@ -30,26 +30,40 @@ from sqlalchemy import create_engine
 
 load_dotenv()
 
-#----------------------------------------------------------------------------#
-# App Config.
-#----------------------------------------------------------------------------#
+# ----------------------
+# App Config - Azure PostgreSQL
+# ----------------------
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(32)
 moment = Moment(app)
 
-# Database configuration
-if os.environ.get('DEPLOYMENT_LOCATION') == 'azure':
-    print("Loading Azure production environment.")
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    db.init_app(app)
-    with app.app_context():
+# Azure PostgreSQL connection - hardcoded
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://maham:Datascience12@maham.postgres.database.azure.com:5432/railway?sslmode=require'
+
+# SQLAlchemy engine options
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    'pool_pre_ping': True,
+    'pool_recycle': 300,
+    'pool_size': 5,
+    'max_overflow': 2
+}
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Initialize DB
+db.init_app(app)
+
+# Ensure tables are created at startup
+with app.app_context():
+    try:
+        print("Attempting to connect to Azure PostgreSQL...")
         db.create_all()
-else:
-    print("No specific environment detected, using default configuration.")
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/railway'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    db.init_app(app)
+        print("✔️ Database connection successful")
+        print("✔️ Tables created/verified")
+    except Exception as e:
+        print(f"❌ Database connection failed: {str(e)}")
+
 
 #----------------------------------------------------------------------------#
 # Filters.
