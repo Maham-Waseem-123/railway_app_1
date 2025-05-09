@@ -1,34 +1,29 @@
-.DS_Store
-.env
-.flaskenv
-*.pyc
-*.pyo
-env/
+# Ignore Python virtual environments
 venv/
-.venv/
-dist/
-build/
-*.egg
-*.egg-info/
-.tox/
-.cache/
-.pytest_cache/
-.idea/
-docs/_build/
-.vscode
+venv310/
+
+# Ignore Python cache files
 __pycache__/
-node_modules/
+*.pyc
 
-# Coverage reports
-htmlcov/
-.coverage
-.coverage.*
-*,cover
+# Ignore environment files
+.env
+environment/
 
-notes.txt
-package-lock.json
-package.json
+# Ignore dev container and CI/CD configs you don’t want to share
+.devcontainer/
+.github/
 
-env_variables.yaml
-gcp.env
-.azure
+# Ignore database exports/imports
+*.sql
+
+# Ignore IDE and OS generated files
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Ignore any other folders you mentioned
+check_db/
+infra/
+
+
