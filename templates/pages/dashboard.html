@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+
 {% block title %}Dashboard | TrainExpress{% endblock %}
 
 {% block content %}
@@ -82,8 +83,6 @@
             </div>
 
             <a href="{{ url_for('add_passenger', train_number=route.train.train_number, travel_date=route.status.travel_date.strftime('%Y-%m-%d')) }}" class="btn btn-yellow btn-block">
-              Book Now
-            </a>
               Book Now
             </a>
           </div>
@@ -196,20 +195,20 @@
   }
 
   .btn-yellow {
-  background-color: #0400e6ec; /* Gold */
-  color: #000; /* Black text */
-  border: none;
-  padding: 0.6rem 1rem;
-  border-radius: 6px;
-  text-align: center;
-  text-decoration: none;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
-}
+    background-color: #0400e6ec; /* Gold */
+    color: #000; /* Black text */
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    text-align: center;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
 
-.btn-yellow:hover {
-  background-color: #0400e6ec; /* Darker shade on hover */
-}
+  .btn-yellow:hover {
+    background-color: #0400e6ec; /* Darker shade on hover */
+  }
 
   .empty-msg {
     color: #888;
