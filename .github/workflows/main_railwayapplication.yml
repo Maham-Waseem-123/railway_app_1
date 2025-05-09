@@ -29,6 +29,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install gunicorn
 
       # Optional: Add tests here if needed
       # - name: Run tests
