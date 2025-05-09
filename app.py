@@ -504,5 +504,5 @@ def server_error(error):
     return render_template('errors/500.html'), 500
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)  # Explicit host/port binding
+    port = int(os.environ.get("PORT", 8000))  # Azure uses 8000 by default
+    app.run(host='0.0.0.0', port=port)  # Must be exactly like this
