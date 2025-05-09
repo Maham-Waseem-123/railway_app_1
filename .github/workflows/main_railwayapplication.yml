@@ -9,14 +9,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read # Required for actions/checkout
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python version
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
@@ -27,33 +25,13 @@ jobs:
           pip install -r requirements.txt
           pip install gunicorn
 
-      # Optional: Add tests here if needed
-      # - name: Run tests
-      #   run: pytest
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    environment:
-      name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    permissions:
-      id-token: write # Required for JWT
-      contents: read  # Required for actions/checkout
-
-    steps:
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_22342BC365A046F585F8B85F8A48E6C8 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_798CC123B34B4ABE9575F21C204DF894 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_3F1BB714D15843BDB35431B22EC06E76 }}
+      - name: Zip the project
+        run: zip -r deployment.zip .
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
-        id: deploy-to-webapp
         with:
           app-name: 'railwayapplication'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}  # Add this line
-          package: .  # Deploy source code directly (let Azure install dependencies)
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
+          package: deployment.zip
