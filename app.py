@@ -3,35 +3,30 @@
 #----------------------------------------------------------------------------#
 import sys
 import os
-from datetime import datetime, timezone  # Ensure timezone is imported
+from datetime import datetime, timezone
 import dateutil.parser
 import babel
 from flask import (
-    Flask,
-    render_template,
-    request,
-    flash,
-    redirect,
-    url_for,
-    abort,
-    session
+    Flask, render_template, request, flash, redirect,
+    url_for, abort, session, jsonify
 )
 from flask_moment import Moment
 from flask_login import LoginManager
-
-from sqlalchemy import or_, desc, and_
-from sqlalchemy.sql import text
+from sqlalchemy import or_, desc, and_, create_engine, text
 from werkzeug.security import generate_password_hash, check_password_hash
-
 from forms import SearchForm, BookingForm, UserRegistrationForm, PassengerForm, LoginForm
 from models import setup_db, db, User, Passenger, TrainInfo, TrainStatus, ReservedTicket, CanceledTicket
 from check_db.check_db import requires_db
+from azure.storage.blob import BlobServiceClient
 from dotenv import load_dotenv
-from sqlalchemy import create_engine
-import requests
-from flask import jsonify
+
 
 load_dotenv()
+#----------------------------------------------------------------------------#
+# Azure Blob Storage Configuration
+#----------------------------------------------------------------------------#
+AZURE_STORAGE_CONNECTION_STRING = "DefaultEndpointsProtocol=https;AccountName=mahamstorage;AccountKey=RlOVEUnUdxiZsPsCvwTCzFCUjZs81wrXmt1i7VwLz49euyRYNgEPRee7/AKlp/LrPyo+pU7K8Ci/+AStlMTZLg==;EndpointSuffix=core.windows.net"
+AZURE_CONTAINER_NAME = "train-docs"
 
 # ----------------------
 # App Config - Azure PostgreSQL
