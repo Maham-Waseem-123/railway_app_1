@@ -40,7 +40,7 @@ moment = Moment(app)
 
 # Azure PostgreSQL connection - hardcoded
 # In your app.py configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://maham@maham:Datascience12.@maham.postgres.database.azure.com:5432/railway?sslmode=require'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://maham:Datascience12.@maham.postgres.database.azure.com:5432/railway?sslmode=require'
 # SQLAlchemy engine options
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
     'pool_pre_ping': True,
@@ -53,6 +53,13 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize DB
 db.init_app(app)
+with app.app_context():
+    try:
+        db.session.execute(text('SELECT 1'))
+        print("Database connection successful!")
+    except Exception as e:
+        print(f"Database connection failed: {str(e)}")
+        raise
 
 # Ensure tables are created at startup
 with app.app_context():
@@ -497,4 +504,4 @@ def server_error(error):
     return render_template('errors/500.html'), 500
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
