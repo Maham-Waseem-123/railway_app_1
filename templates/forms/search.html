@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% block title %}Search Trains | TrainBooking{% endblock %}
+
+{% block content %}
+<div class="search-container">
+  <h1 class="search-heading">Find Your Perfect Journey</h1>
+  
+  <form method="POST" action="{{ url_for('search_trains') }}" class="search-form">
+    {{ form.hidden_tag() }}
+    
+    <div class="form-group">
+      <div class="input-group">
+        <i class="fas fa-map-marker-alt input-icon"></i>
+        {{ form.departure_city(class="form-control", placeholder="Departure City") }}
+      </div>
+      {% for error in form.departure_city.errors %}
+        <small class="form-error">{{ error }}</small>
+      {% endfor %}
+    </div>
+    
+    <div class="form-group">
+      <div class="input-group">
+        <i class="fas fa-map-marker-alt input-icon"></i>
+        {{ form.arrival_city(class="form-control", placeholder="Arrival City") }}
+      </div>
+      {% for error in form.arrival_city.errors %}
+        <small class="form-error">{{ error }}</small>
+      {% endfor %}
+    </div>
+    
+    <div class="form-group">
+      <div class="input-group">
+        <i class="far fa-calendar-alt input-icon"></i>
+        {{ form.travel_date(class="form-control", placeholder="Travel Date") }}
+      </div>
+      {% for error in form.travel_date.errors %}
+        <small class="form-error">{{ error }}</small>
+      {% endfor %}
+    </div>
+    
+    <button type="submit" class="btn btn-primary search-btn">
+      <i class="fas fa-search"></i> Search Trains
+    </button>
+  </form>
+</div>
+
+<style>
+  .search-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  }
+
+  .search-heading {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    color: rgb(250, 250, 250);
+  }
+
+  .search-form {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .input-icon {
+    position: absolute;
+    left: 15px;
+    color: #eeff00;
+    font-size: 1.2rem;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 12px 20px 12px 45px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: rgb(253, 253, 253);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .form-control:focus {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: #eeff00;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(238, 255, 0, 0.2);
+  }
+
+  .search-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-top: 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .search-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(238, 255, 0, 0.3);
+  }
+
+  .form-error {
+    color: #ff6b6b;
+    font-size: 0.9rem;
+    margin-top: 0.3rem;
+    display: block;
+  }
+
+  @media (max-width: 768px) {
+    .search-container {
+      padding: 1.5rem;
+      margin: 0 1rem;
+    }
+    
+    .search-heading {
+      font-size: 2rem;
+    }
+  }
+</style>
+{% endblock %}

@@ -1,11 +1,10 @@
 import os
 
-conn_str = os.environ.get('AZURE_POSTGRESQL_CONNECTIONSTRING')
-conn_str_params = {pair.split('=')[0]: pair.split('=')[1] for pair in conn_str.split(' ')}
-
-DATABASE_URI = 'postgresql+psycopg2://{dbuser}:{dbpass}@{dbhost}/{dbname}'.format(
-    dbuser=conn_str_params['user'],
-    dbpass=conn_str_params['password'],
-    dbhost=conn_str_params['host'],
-    dbname=conn_str_params['dbname']
+DATABASE_URI = 'postgresql+psycopg2://{dbuser}:{dbpass}@{dbhost}:{dbport}/{dbname}?sslmode=require'.format(
+    db_connector='postgresql+psycopg2',
+    dbuser=os.environ.get('DB_USER_NAME'),
+    dbpass=os.environ.get('DB_PASSWORD'),
+    dbhost=os.environ.get('DB_HOST'),
+    dbport=os.environ.get('DB_PORT', 5432),  # Default PostgreSQL port
+    dbname=os.environ.get('DB_NAME')
 )

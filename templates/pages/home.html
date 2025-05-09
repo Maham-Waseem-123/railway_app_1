@@ -1,26 +1,257 @@
-{% extends 'layouts/main.html' %}
-{% block title %}Fyyur{% endblock %}
+{% extends 'base.html' %}
+
+{% block title %}TrainBooking - Home{% endblock %}
+
 {% block content %}
-<div class="row">
-	<div class="col-sm-6">
-		<h1>Fyyur 🔥</h1>
-		<p class="lead">Where musical artists meet musical venues.</p>
-		<h3>
-			<a href="/venues"><button class="btn btn-primary btn-lg">Find a venue</button></a>
-			<a href="/venues/create"><button class="btn btn-default btn-lg">Post a venue</button></a>
-		</h3>
-		<h3>
-			<a href="/artists"><button class="btn btn-primary btn-lg">Find an artist</button></a>
-			<a href="/artists/create"><button class="btn btn-default btn-lg">Post an artist</button></a>
-		</h3>
-		<p class="lead">Publicize about your show for free.</p>
-		<h3>
-			<a href="/shows/create"><button class="btn btn-default btn-lg">Post a show</button></a>
-		</h3>
-	</div>
-	<div class="col-sm-6 hidden-sm hidden-xs">
-		<img id="front-splash" src="{{ url_for('static',filename='img/front-splash.jpg') }}"
-			alt="Front Photo of Musical Band" />
-	</div>
+<div class="hero-section text-center">
+  <h1 class="hero-title">Book Your Train Journey</h1>
+  <p class="hero-subtitle">Fast, Reliable, and Comfortable Travel</p>
+
+  <!-- Search Form (Table Style) -->
+  <div class="search-box">
+    <form action="{{ url_for('search_trains') }}" method="POST" class="search-form">
+      {{ form.hidden_tag() }}
+      <table class="search-table">
+        <tr>
+          <td>
+            <label for="departure_city">From</label><br>
+            <input type="text" id="departure_city" name="departure_city" placeholder="Departure City" required>
+          </td>
+          <td>
+            <label for="arrival_city">To</label><br>
+            <input type="text" id="arrival_city" name="arrival_city" placeholder="Arrival City" required>
+          </td>
+          <td>
+            <label for="travel_date">Date</label><br>
+            <input type="date" id="travel_date" name="travel_date" placeholder="mm/dd/yyyy" required>
+          </td>
+          <td style="vertical-align: bottom;">
+            <button type="submit" class="btn-search">Search Trains</button>
+          </td>
+        </tr>
+      </table>
+    </form>
+  </div>
 </div>
+
+<!-- Features Section -->
+<div class="features-section">
+  <h2 class="section-title">Why Choose Us?</h2>
+  <div class="features-grid">
+    <div class="feature-card">
+      <i class="fas fa-train feature-icon"></i>
+      <h3>Wide Network</h3>
+      <p>Connect to major cities across the country with our extensive railway network.</p>
+    </div>
+    <div class="feature-card">
+      <i class="fas fa-clock feature-icon"></i>
+      <h3>Real-time Updates</h3>
+      <p>Get accurate train schedules and seat availability in real-time.</p>
+    </div>
+    <div class="feature-card">
+      <i class="fas fa-shield-alt feature-icon"></i>
+      <h3>Secure Booking</h3>
+      <p>Your transactions are safe with our secure payment gateway.</p>
+    </div>
+    <div class="feature-card">
+      <i class="fas fa-headset feature-icon"></i>
+      <h3>24/7 Support</h3>
+      <p>Our customer support team is always ready to assist you.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Popular Trains -->
+<div class="popular-trains">
+  <h2 class="section-title">Popular Trains</h2>
+  <div class="train-grid">
+    {% for train in popular_trains %}
+    <div class="train-card {% if loop.last %}center-align{% endif %}">
+      <div class="train-header">
+        <h3>{{ train.train_name }}</h3>
+        <span class="train-number">{{ train.train_number }}</span>
+      </div>
+      <div class="train-route">
+        <span class="departure">{{ train.departure_city }}</span>
+        <i class="fas fa-arrow-right"></i>
+        <span class="arrival">{{ train.arrival_city }}</span>
+      </div>
+      <div class="train-actions">
+        <a href="{{ url_for('login') }}" class="btn-yellow">Book Now!</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+  body {
+    background-color: transparent;
+    color: white;
+  }
+
+  .hero-section {
+    padding: 4rem 1rem;
+    text-align: center;
+    color: rgb(255, 250, 250);
+    background: transparent;
+  }
+
+  .hero-title {
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.5rem;
+    color: white;
+    margin-bottom: 2rem;
+  }
+
+  .search-table {
+    margin: 0 auto;
+    border-collapse: separate;
+    border-spacing: 2rem;
+  }
+
+  .search-table td {
+    text-align: center;
+  }
+
+  .search-table input {
+    width: 100%;
+    padding: 0.75rem;
+    background: transparent;
+    border: 1px solid rgb(209, 199, 199);
+    color: rgb(255, 255, 255);
+    border-radius: 5px;
+  }
+
+  .search-table input::placeholder {
+    color: rgb(248, 248, 248);
+  }
+
+  .btn-search {
+    background-color: #ffd700;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-weight: bold;
+    border-radius: 5px;
+  }
+
+  .features-section {
+    padding: 4rem 0;
+  }
+
+  .section-title {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: auto;
+  }
+
+  .feature-card {
+    border: 1px solid rgba(196, 185, 185, 0.267);
+    padding: 2rem;
+    border-radius: 10px;
+    background: rgba(209, 202, 202, 0.466); /* Removed "solid" */
+    text-align: center;
+  }
+
+  .feature-icon {
+    font-size: 2.5rem;
+    color: #ffd700;
+    margin-bottom: 1rem;
+  }
+
+  .popular-trains {
+    padding: 4rem 0;
+  }
+
+  .train-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: space-around; /* Better than center for uneven counts */
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+  .train-card {
+    width: 300px;
+    border: 1px solid rgba(209, 202, 202, 0.781);
+    border-radius: 10px;
+    background: rgba(209, 202, 202, 0.466);
+  }
+
+  .train-card.center-align {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .train-header {
+    padding: 1rem;
+    background: rgba(255,255,255,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .train-header h3 {
+    color: white;
+    margin: 0;
+  }
+
+  .train-number {
+    background: #ffd700;
+    color: black;
+    padding: 0.3rem 0.7rem;
+    border-radius: 20px;
+  }
+
+  .train-route {
+    padding: 1rem;
+    text-align: center;
+    font-size: 1.1rem;
+  }
+
+  .train-actions {
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .btn-yellow {
+    background-color: #ffd700;
+    color: white;
+    border: none;
+    padding: 0.5rem 1.2rem;
+    font-weight: bold;
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .site-footer {
+    background-color: black;
+    padding: 2rem 0;
+    text-align: center;
+    margin-top: 3rem;
+  }
+
+  .footer-content {
+    color: white;
+    line-height: 1.6;
+  }
+</style>
 {% endblock %}

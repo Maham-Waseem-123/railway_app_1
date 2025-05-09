@@ -1,0 +1,65 @@
+<!-- admin_trains.html -->
+{% extends 'base.html' %}
+{% block title %}Admin - Trains{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h2 class="headline">Manage Trains</h2>
+  
+  <div class="mb-4">
+    <a href="/trains/create" class="btn btn-danger">Add New Train</a>
+  </div>
+
+  <div class="feature-card">
+    <table class="table table-striped custom-table">
+      <thead>
+        <tr>
+          <th>Train #</th>
+          <th>Name</th>
+          <th>Departure</th>
+          <th>Arrival</th>
+          <th>Seat Capacities</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for train in trains %}
+        <tr>
+          <td>{{ train.train_number }}</td>
+          <td>{{ train.train_name }}</td>
+          <td>{{ train.departure_city }}</td>
+          <td>{{ train.arrival_city }}</td>
+          <td>
+            Economy: {{ train.economy_lare }}<br>
+            Birth: {{ train.economy_birth_lare }}<br>
+            AC Business: {{ train.ac_business_lare }}
+          </td>
+          <td>
+            <a href="/trains/{{ train.train_number }}/edit" class="btn btn-primary btn-sm">Edit</a>
+            <button class="btn btn-outline btn-sm">Delete</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<style>
+  body, h2, th, td, a, button {
+    color: black !important;
+  }
+
+  .custom-table {
+    background-color: #fff;
+  }
+
+  .table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: #f9f9f9;
+  }
+
+  .btn {
+    color: black !important;
+  }
+</style>
+{% endblock %}

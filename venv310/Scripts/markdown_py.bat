@@ -1,0 +1,1 @@
+@"C:\Users\Aksystems\flask-webapp-postgresql-db\venv310\Scripts\python.exe" "C:\Users\Aksystems\flask-webapp-postgresql-db\venv310\Scripts\markdown_py" %*

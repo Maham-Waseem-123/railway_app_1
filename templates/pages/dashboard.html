@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard | TrainExpress{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+  <div class="dashboard-card">
+
+    <h2 class="dashboard-heading">Find Your Train</h2>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-warning">
+          {% for message in messages %}
+            {{ message }}
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Route Selection Form -->
+    <form method="POST" action="{{ url_for('filter_trains') }}" class="dashboard-form">
+      <div class="form-group">
+        <label for="departure_city">From</label>
+        <select name="departure_city" id="departure_city" required class="form-control">
+          <option value="">Select departure city</option>
+          {% for route in popular_routes %}
+            <option value="{{ route[0] }}"
+              {% if selected_route and selected_route.departure == route[0] %}selected{% endif %}>
+              {{ route[0] }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="arrival_city">To</label>
+        <select name="arrival_city" id="arrival_city" required class="form-control">
+          <option value="">Select arrival city</option>
+          {% for route in popular_routes %}
+            <option value="{{ route[1] }}"
+              {% if selected_route and selected_route.arrival == route[1] %}selected{% endif %}>
+              {{ route[1] }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-primary dashboard-btn">Show Trains</button>
+    </form>
+
+    <!-- Filtered Trains -->
+    <div class="train-results">
+      <h3>
+        {% if selected_route %}
+          Trains from {{ selected_route.departure }} to {{ selected_route.arrival }}
+        {% else %}
+          Popular Trains
+        {% endif %}
+      </h3>
+
+      {% if not route_trains %}
+        <p class="empty-msg">No trains found for selected route.</p>
+      {% else %}
+        <div class="trains-list">
+          {% for route in route_trains %}
+          <div class="train-card">
+            <div class="train-header">
+              <h4>{{ route.train.train_name }}</h4>
+              <span class="train-number">#{{ route.train.train_number }}</span>
+            </div>
+
+            <div class="train-info">
+              <p><strong>Route:</strong> {{ route.train.departure_city }} → {{ route.train.arrival_city }}</p>
+              <p><strong>Date:</strong> {{ route.status.travel_date.strftime('%Y-%m-%d') }}</p>
+              <p><strong>Available Seats:</strong></p>
+              <ul class="seat-list">
+                {% for type, seats in route.available_seats.items() %}
+                  <li>{{ type|replace('_', ' ')|title }}: {{ seats }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+
+            <a href="{{ url_for('add_passenger', train_number=route.train.train_number, travel_date=route.status.travel_date.strftime('%Y-%m-%d')) }}" class="btn btn-yellow btn-block">
+              Book Now
+            </a>
+              Book Now
+            </a>
+          </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+
+<style>
+  .dashboard-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 2rem;
+    background-color: transparent;
+  }
+
+  .dashboard-card {
+    width: 100%;
+    max-width: 1000px;
+    padding: 2rem;
+    background: #5a4f4f63;
+    border-radius: 10px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  }
+
+  .dashboard-heading {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    color: #f4f6f8;
+  }
+
+  .dashboard-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-group label {
+    margin-bottom: 0.3rem;
+    font-weight: 500;
+  }
+
+  .form-control {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+
+  .dashboard-btn {
+    align-self: end;
+    padding: 0.6rem 1.5rem;
+  }
+
+  .train-results h3 {
+    margin-bottom: 1rem;
+    color: #ffffff;
+  }
+
+  .trains-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+  }
+
+  .train-card {
+    border: 1px solid #e1e1e191;
+    border-radius: 8px;
+    padding: 1rem;
+    background: #5f5d5d5b;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .train-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+
+  .train-number {
+    background: #d7e60e;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+  }
+
+  .train-info p {
+    margin: 0.3rem 0;
+  }
+
+  .seat-list {
+    list-style: none;
+    padding-left: 1rem;
+  }
+
+  .seat-list li {
+    font-size: 0.9rem;
+  }
+
+  .btn-yellow {
+  background-color: #0400e6ec; /* Gold */
+  color: #000; /* Black text */
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  text-align: center;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.btn-yellow:hover {
+  background-color: #0400e6ec; /* Darker shade on hover */
+}
+
+  .empty-msg {
+    color: #888;
+    font-style: italic;
+  }
+
+  @media (max-width: 768px) {
+    .dashboard-form {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endblock %}
