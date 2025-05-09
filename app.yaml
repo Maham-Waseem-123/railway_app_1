@@ -1,0 +1,5 @@
+runtime: python38
+entrypoint: gunicorn -b :$PORT app:app
+
+includes:
+  - env_variables.yaml

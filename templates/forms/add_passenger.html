@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% block title %}Add Passenger{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+  <div class="dashboard-card">
+    <h2 class="dashboard-heading">Add New Passenger</h2>
+
+    <form method="POST" action="{{ url_for('add_passenger', train_number=train_number, travel_date=travel_date) }}" class="dashboard-form">
+      {{ form.hidden_tag() }}
+
+      <input type="hidden" name="train_number" value="{{ train_number }}">
+      <input type="hidden" name="travel_date" value="{{ travel_date }}">
+
+      <div class="form-group">
+        <label for="name">{{ form.name.label }}</label>
+        {{ form.name(class="form-control") }}
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="age">{{ form.age.label }}</label>
+          {{ form.age(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+          <label for="gender">{{ form.gender.label }}</label>
+          {{ form.gender(class="form-control") }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="cnic">{{ form.cnic.label }}</label>
+        {{ form.cnic(class="form-control") }}
+      </div>
+
+      <div class="form-group">
+        <label for="phone">{{ form.phone.label }}</label>
+        {{ form.phone(class="form-control") }}
+      </div>
+
+      <div class="form-group">
+        <label for="email">{{ form.email.label }}</label>
+        {{ form.email(class="form-control") }}
+      </div>
+
+      <div class="form-group">
+        <label for="address">{{ form.address.label }}</label>
+        {{ form.address(class="form-control", rows=3) }}
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-yellow">Save Passenger</button>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+  .dashboard-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .dashboard-card {
+    width: 100%;
+    max-width: 800px;
+    background: #5a4f4f63;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    color: #f4f6f8;
+  }
+
+  .dashboard-heading {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .dashboard-form .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+  }
+
+  .form-group label {
+    margin-bottom: 0.3rem;
+    font-weight: 500;
+  }
+
+  .form-control {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #fff;
+    color: #000;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .form-row .form-group {
+    flex: 1;
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+  }
+
+  .btn-yellow {
+    background-color: #0400e6ec;
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn-yellow:hover {
+    background-color: #0200c6;
+  }
+
+  .btn-outline {
+    background-color: transparent;
+    border: 1px solid #fff;
+    color: #fff;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    font-weight: bold;
+  }
+
+  .btn-outline:hover {
+    background-color: #fff;
+    color: #000;
+  }
+
+  @media (max-width: 768px) {
+    .form-row {
+      flex-direction: column;
+    }
+
+    .form-actions {
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+  }
+</style>
+{% endblock %}

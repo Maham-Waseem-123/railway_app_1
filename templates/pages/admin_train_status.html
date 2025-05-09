@@ -1,0 +1,57 @@
+<!-- admin_train_status.html -->
+{% extends 'base.html' %}
+{% block title %}Admin - Train Status{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h2 class="headline">Train Status Management</h2>
+  
+  <div class="mb-4">
+    <a href="/train_status/create" class="btn btn-danger">Add New Status</a>
+  </div>
+
+  <div class="feature-card">
+    <table class="table table-dark table-striped">
+      <thead>
+        <tr>
+          <th>Train #</th>
+          <th>Travel Date</th>
+          <th>Economy</th>
+          <th>Birth</th>
+          <th>AC Business</th>
+          <th>Booked Seats</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for status in status_list %}
+        <tr>
+          <td>{{ status.train_number }}</td>
+          <td>{{ status.travel_date }}</td>
+          <td>{{ status.total_economy_seats }}</td>
+          <td>{{ status.total_birth_seats }}</td>
+          <td>{{ status.total_business_seats }}</td>
+          <td>
+            Eco: {{ status.booked_economy_seats }}<br>
+            Birth: {{ status.booked_birth_seats }}<br>
+            Business: {{ status.booked_business_seats }}
+          </td>
+          <td>
+            <a href="/train_status/{{ status.status_id }}/edit" class="btn btn-primary btn-sm">Edit</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<style>
+  .table td {
+    vertical-align: middle;
+  }
+  .table th {
+    background: rgba(238, 255, 0, 0.2);
+  }
+</style>
+{% endblock %}

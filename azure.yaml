@@ -1,0 +1,6 @@
+name: flask-webapp-postgresql-db
+services:
+  web:
+    project: .
+    language: py
+    host: appservice
