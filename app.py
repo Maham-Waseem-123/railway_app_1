@@ -28,6 +28,8 @@ from models import setup_db, db, User, Passenger, TrainInfo, TrainStatus, Reserv
 from check_db.check_db import requires_db
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
+import requests
+from flask import jsonify
 
 load_dotenv()
 
@@ -481,6 +483,39 @@ def add_passenger():
                          form=form, 
                          train_number=train_number, 
                          travel_date=travel_date)
+# Add to your app.py
+@app.route('/ask', methods=['POST'])
+def ask_question():
+    # Get user question from frontend
+    data = request.json
+    question = data.get('question', '')
+
+    # Azure Language Service config (use your actual values)
+    endpoint = "https://mahamai.cognitiveservices.azure.com/language/query-knowledgebases?projectName=TrainBot-QA&api-version=2021-10-01&deploymentName=production"
+    key = "BL7QRuwdhuojB1THueErvTAYbH2kQADCwUBI4F4U3zo4OCuX7PKJQQJ99BEACMsfrFXJ3w3AAAaACOGOSa7"
+
+    headers = {
+        "Ocp-Apim-Subscription-Key": key,
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "question": question,
+        "top": 3,
+        "confidenceScoreThreshold": 0.5,
+        "answerSpanRequest": {
+            "enable": True,
+            "topAnswersWithSpan": 1
+        }
+    }
+
+    try:
+        response = requests.post(endpoint, headers=headers, json=payload)
+        response.raise_for_status()
+        best_answer = response.json()['answers'][0]['answer']
+        return jsonify({"answer": best_answer})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # Admin Views
 @app.route('/admin/trains')
