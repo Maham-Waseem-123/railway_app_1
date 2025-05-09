@@ -22,22 +22,25 @@
   {% endwith %}
 
   <div class="booking-grid">
-    <div class="booking-form">
-      <form method="POST" action="{{ url_for('book_train', train_number=train.train_number, travel_date=travel_date) }}">
-        {{ form.hidden_tag() }}
+    <!-- Wrapping form for vertical center -->
+    <div class="booking-form-wrapper">
+      <div class="booking-form">
+        <form method="POST" action="{{ url_for('book_train', train_number=train.train_number, travel_date=travel_date) }}">
+          {{ form.hidden_tag() }}
 
-        <div class="form-group">
-          <label for="passenger_id">{{ form.passenger_id.label }}</label>
-          {{ form.passenger_id(class="form-control") }}
-        </div>
+          <div class="form-group">
+            <label for="passenger_id">{{ form.passenger_id.label }}</label>
+            {{ form.passenger_id(class="form-control") }}
+          </div>
 
-        <div class="form-group">
-          <label for="ticket_category">{{ form.ticket_category.label }}</label>
-          {{ form.ticket_category(class="form-control") }}
-        </div>
+          <div class="form-group">
+            <label for="ticket_category">{{ form.ticket_category.label }}</label>
+            {{ form.ticket_category(class="form-control") }}
+          </div>
 
-        <button type="submit" class="btn btn-yellow">Confirm Booking</button>
-      </form>
+          <button type="submit" class="btn btn-yellow">Confirm Booking</button>
+        </form>
+      </div>
     </div>
 
     <div class="booking-details">
@@ -72,6 +75,7 @@
   </div>
 </div>
 
+<!-- Updated Styling -->
 <style>
   .booking-container {
     max-width: 900px;
@@ -94,32 +98,33 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
+    align-items: center;
+    min-height: 500px;
   }
 
-  .booking-form, .booking-details {
-    background: #5a4f4f63;
-    padding: 1.5rem;
-    border-radius: 10px;
-  }
-
-  .booking-form {
+  .booking-form-wrapper {
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100%;
   }
 
+  .booking-form {
+    background: #5a4f4f63;
+    padding: 2rem;
+    border-radius: 10px;
+    width: 100%;
+  }
+
   .form-group {
     margin-bottom: 1.5rem;
-    width: 100%;
   }
 
   .form-group label {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 600;
-    text-align: center;
+    color: #fff;
   }
 
   .form-control {
@@ -129,6 +134,7 @@
     border: 1px solid #ccc;
     background-color: #fff;
     color: #000;
+    font-size: 1rem;
   }
 
   .btn-yellow {
@@ -144,6 +150,12 @@
 
   .btn-yellow:hover {
     background-color: #0200c6;
+  }
+
+  .booking-details {
+    background: #5a4f4f63;
+    padding: 1.5rem;
+    border-radius: 10px;
   }
 
   .detail-item {
