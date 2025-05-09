@@ -484,52 +484,6 @@ def add_passenger():
                          train_number=train_number, 
                          travel_date=travel_date)
 
-# Azure Language Service Configuration
-# Replace the existing endpoint with this corrected format
-AZURE_LANGUAGE_ENDPOINT = "https://mahamai.cognitiveservices.azure.com/language/query-knowledgebases/projects/TrainBot-QA/qnas/answers"
-AZURE_LANGUAGE_KEY = "BL7QRuwdhuojB1THueErvTAYbH2kQADCwUBI4F4U3zo4OCuX7PKJQQJ99BEACMsfrFXJ3w3AAAaACOGOSa7"
-
-@app.route('/ask', methods=['POST'])
-def ask_question():
-    data = request.json
-    question = data.get('question', '')
-
-    headers = {
-        "Ocp-Apim-Subscription-Key": AZURE_LANGUAGE_KEY,
-        "Content-Type": "application/json"
-    }
-
-    params = {
-        "api-version": "2021-10-01",
-        "deploymentName": "production"
-    }
-
-    payload = {
-        "question": question,
-        "top": 3,
-        "confidenceScoreThreshold": 0.3
-    }
-
-    try:
-        response = requests.post(
-            AZURE_LANGUAGE_ENDPOINT,
-            headers=headers,
-            params=params,
-            json=payload
-        )
-        response.raise_for_status()
-        
-        result = response.json()
-        if not result.get('answers'):
-            return jsonify({"answer": "I couldn't find information about that train."})
-
-        # Handle updated response format
-        best_answer = result['answers'][0].get('answer', 'No answer found')
-        return jsonify({"answer": best_answer})
-
-    except Exception as e:
-        print(f"Error: {str(e)}")
-        return jsonify({"error": "Failed to process your question"}), 500
 
 # Admin Views
 @app.route('/admin/trains')
