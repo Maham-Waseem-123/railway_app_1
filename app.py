@@ -39,8 +39,8 @@ app.config['SECRET_KEY'] = os.urandom(32)
 moment = Moment(app)
 
 # Azure PostgreSQL connection - hardcoded
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://maham@maham:Datascience12@maham.postgres.database.azure.com:5432/railway?sslmode=require'
-
+# In your app.py configuration
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://maham@maham:Datascience12.@maham.postgres.database.azure.com:5432/railway?sslmode=require'
 # SQLAlchemy engine options
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
     'pool_pre_ping': True,
