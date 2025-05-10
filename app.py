@@ -17,7 +17,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from forms import SearchForm, BookingForm, UserRegistrationForm, PassengerForm, LoginForm
 from models import setup_db, db, User, Passenger, TrainInfo, TrainStatus, ReservedTicket, CanceledTicket
 from check_db.check_db import requires_db
-from azure.storage.blob import BlobServiceClient
+from io import BytesIO
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from azure.storage.blob import BlobServiceClient  # already exists
 from dotenv import load_dotenv
 
 
@@ -103,6 +106,23 @@ def calculate_available_seats(train_number, travel_date):
         'ac_standard': status.total_standard_seats - status.booked_standard_seats,
         'ac_sleeper': status.total_sleeper_seats - status.booked_sleeper_seats
     }
+
+def generate_pdf_ticket(booking_details):
+    buffer = BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=letter)
+
+    pdf.setFont("Helvetica-Bold", 16)
+    pdf.drawString(100, 750, "Railway Booking Ticket")
+
+    pdf.setFont("Helvetica", 12)
+    pdf.drawString(100, 720, f"Passenger: {booking_details.passenger.passenger_name}")
+    pdf.drawString(100, 700, f"Train: {booking_details.train.train_name} ({booking_details.train.train_number})")
+    pdf.drawString(100, 680, f"Date: {booking_details.travel_date.strftime('%Y-%m-%d')}")
+    pdf.drawString(100, 660, f"Class: {booking_details.ticket_category.upper()}")
+
+    pdf.save()
+    buffer.seek(0)
+    return buffer
 
 #----------------------------------------------------------------------------#
 # Controllers.
@@ -324,9 +344,11 @@ def book_train(train_number, travel_date):
     # Get available seats
     available_seats = calculate_available_seats(train_number, travel_date)
     
-    # Get user's passengers for dropdown
-    form.passenger_id.choices = [(p.passenger_id, p.passenger_name) 
-                               for p in Passenger.query.filter_by(user_id=user_id).all()]
+    # Populate passengers for dropdown
+    form.passenger_id.choices = [
+        (p.passenger_id, p.passenger_name) 
+        for p in Passenger.query.filter_by(user_id=user_id).all()
+    ]
     
     if form.validate_on_submit():
         try:
@@ -349,12 +371,26 @@ def book_train(train_number, travel_date):
                 'ac_sleeper': 'booked_sleeper_seats'
             }
             
-            seat_field = category_map[form.ticket_category.data]
-            setattr(status, seat_field, getattr(status, seat_field) + 1)
+            seat_field = category_map.get(form.ticket_category.data)
+            if seat_field:
+                setattr(status, seat_field, getattr(status, seat_field) + 1)
             
             db.session.add(booking)
             db.session.commit()
-            
+
+            # Generate PDF and upload to Azure
+            try:
+                pdf_buffer = generate_pdf_ticket(booking)
+                blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
+                container_client = blob_service_client.get_container_client(AZURE_CONTAINER_NAME)
+                blob_name = f"tickets/{booking.ticket_id}.pdf"
+                blob_client = container_client.get_blob_client(blob_name)
+                blob_client.upload_blob(pdf_buffer.getvalue(), overwrite=True)
+                flash('Ticket generated and uploaded to Azure successfully!')
+            except Exception as e:
+                app.logger.error(f"PDF generation or upload failed: {str(e)}")
+                flash('Booking confirmed, but ticket generation failed. Contact support.')
+
             flash('Booking successful!')
             return redirect(url_for('dashboard'))
         
@@ -362,22 +398,15 @@ def book_train(train_number, travel_date):
             db.session.rollback()
             flash(f'Booking failed. Error: {str(e)}')
     
-    return render_template('forms/booking.html',
-                         form=form,
-                         train=train,
-                         travel_date=travel_date,
-                         available_seats=available_seats)
+    return render_template(
+        'forms/booking.html',
+        form=form,
+        train=train,
+        travel_date=travel_date,
+        available_seats=available_seats,
+        status=status
+    )
 
-    
-    # Calculate available seats
-    available_seats = calculate_available_seats(train_number, travel_date)
-    
-    return render_template('forms/booking.html', 
-                         form=form,
-                         train=train,
-                         status=status,
-                         travel_date=travel_date,
-                         available_seats=available_seats)
 
 @app.route('/cancel/<int:ticket_id>')
 @requires_db(app.config.get('SQLALCHEMY_DATABASE_URI'))
