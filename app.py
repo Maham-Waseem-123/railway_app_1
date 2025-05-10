@@ -17,9 +17,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from forms import SearchForm, BookingForm, UserRegistrationForm, PassengerForm, LoginForm
 from models import setup_db, db, User, Passenger, TrainInfo, TrainStatus, ReservedTicket, CanceledTicket
 from check_db.check_db import requires_db
-from io import BytesIO
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
 from azure.storage.blob import BlobServiceClient  # already exists
 from dotenv import load_dotenv
 
@@ -107,22 +104,6 @@ def calculate_available_seats(train_number, travel_date):
         'ac_sleeper': status.total_sleeper_seats - status.booked_sleeper_seats
     }
 
-def generate_pdf_ticket(booking_details):
-    buffer = BytesIO()
-    pdf = canvas.Canvas(buffer, pagesize=letter)
-
-    pdf.setFont("Helvetica-Bold", 16)
-    pdf.drawString(100, 750, "Railway Booking Ticket")
-
-    pdf.setFont("Helvetica", 12)
-    pdf.drawString(100, 720, f"Passenger: {booking_details.passenger.passenger_name}")
-    pdf.drawString(100, 700, f"Train: {booking_details.train.train_name} ({booking_details.train.train_number})")
-    pdf.drawString(100, 680, f"Date: {booking_details.travel_date.strftime('%Y-%m-%d')}")
-    pdf.drawString(100, 660, f"Class: {booking_details.ticket_category.upper()}")
-
-    pdf.save()
-    buffer.seek(0)
-    return buffer
 
 #----------------------------------------------------------------------------#
 # Controllers.
@@ -377,19 +358,6 @@ def book_train(train_number, travel_date):
             
             db.session.add(booking)
             db.session.commit()
-
-            # Generate PDF and upload to Azure
-            try:
-                pdf_buffer = generate_pdf_ticket(booking)
-                blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
-                container_client = blob_service_client.get_container_client(AZURE_CONTAINER_NAME)
-                blob_name = f"tickets/{booking.ticket_id}.pdf"
-                blob_client = container_client.get_blob_client(blob_name)
-                blob_client.upload_blob(pdf_buffer.getvalue(), overwrite=True)
-                flash('Ticket generated and uploaded to Azure successfully!')
-            except Exception as e:
-                app.logger.error(f"PDF generation or upload failed: {str(e)}")
-                flash('Booking confirmed, but ticket generation failed. Contact support.')
 
             flash('Booking successful!')
             return redirect(url_for('dashboard'))
