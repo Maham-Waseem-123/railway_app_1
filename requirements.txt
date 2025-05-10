@@ -19,3 +19,6 @@ email-validator
 python-dotenv==0.19.0
 requests==2.31.0  # <--- ADD THIS LINE
 azure-storage-blob==12.19.1  # <--- added
++reportlab==4.0.4         # For PDF generation
++pyPDF2==3.0.1            # Optional: For PDF manipulation
++python-qrcode==7.4.2     # Optional: For QR codes in tickets
